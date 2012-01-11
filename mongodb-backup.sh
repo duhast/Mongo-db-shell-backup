@@ -19,7 +19,7 @@ PASSWORD=""
 # keyword DATE gets replaced by the current date, you can use it in either path below
 BACKUP_PATH="/path/to/backup/directory" # do not include trailing slash
 FILE_NAME="DATE" #defaults to [currentdate].tar.gz ex: 2011-12-19.tar.gz
-
+HOLD_COUNT="7"
 
 ##################################################################################
 # Should not have to edit below this line unless you require special functionality
@@ -84,6 +84,12 @@ if [ -d "$BACKUP_PATH" ]; then
 		fi
 	else 
 		echo; echo "!!!=> Failed to backup mongoDB"; echo;	
+	fi
+
+	# remove old files
+	CURRENT="$(ls *.tar.gz | wc -l)"
+	if [ "$CURRENT" -gt "$HOLD_COUNT" ]; then
+	    ls -t *.tar.gz | tail -`expr $CURRENT - $HOLD_COUNT` | xargs rm
 	fi
 else
 
